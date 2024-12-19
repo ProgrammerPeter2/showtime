@@ -1,7 +1,10 @@
+mod app_window;
+
 use gtk4 as gtk;
 
+use app_window::AppWindow;
 use gtk::prelude::*;
-use gtk::{glib, Application, ApplicationWindow, Button};
+use gtk::{glib, Application};
 
 fn main() -> glib::ExitCode {
     let application = Application::builder()
@@ -9,19 +12,7 @@ fn main() -> glib::ExitCode {
         .build();
 
     application.connect_activate(|app| {
-        let window = ApplicationWindow::builder()
-            .application(app)
-            .title("First GTK Program")
-            .default_width(350)
-            .default_height(70)
-            .build();
-
-        let button = Button::with_label("Click me!");
-        button.connect_clicked(|_| {
-            eprintln!("Clicked!");
-        });
-        window.set_child(Some(&button));
-
+        let window = AppWindow::new(app);
         window.present();
     });
 
