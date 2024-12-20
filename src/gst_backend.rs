@@ -1,18 +1,44 @@
+use async_channel::Sender;
 use glib::clone;
 use gst::prelude::*;
 use gtk4::glib;
 
 #[derive(Debug, Clone)]
 pub struct GstBackend {
+    sender: Sender<u64>,
     gst_player: gst_play::Play,
+    gst_signals: gst_play::PlaySignalAdapter,
 }
 
 impl GstBackend {
-    pub fn new() -> Self {
+    pub fn new(sender: Sender<u64>) -> Self {
         let gst_player = gst_play::Play::default();
         gst_player.set_video_track_enabled(false);
-        let res = Self { gst_player };
+
+        let signals = gst_play::PlaySignalAdapter::new(&gst_player);
+        let res = Self {
+            sender,
+            gst_player,
+            gst_signals: signals,
+        };
+        res.setup_signals();
+
         res
+    }
+
+    fn setup_signals(&self) {
+        self.gst_signals.connect_position_updated(clone!(
+            #[strong(rename_to = sender)]
+            self.sender,
+            move |_, clock| {
+                if let Some(clock) = clock {
+                    let position = clock.seconds() as u64;
+                    if let Err(e) = sender.send_blocking(position) {
+                        eprintln!("Failed to send position: {}", e);
+                    }
+                }
+            }
+        ));
     }
 
     pub fn set_song_uri(&self, uri: Option<&str>) {
