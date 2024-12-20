@@ -5,3 +5,15 @@ edition = "2021"
 
 [dependencies]
 gtk4 = { version = "0.9.5", features = ["v4_16", "gnome_47"] }
+
+[dependencies.gst]
+package = "gstreamer"
+version = "0.23"
+
+[dependencies.gst-audio]
+package = "gstreamer-audio"
+version = "0.23"
+
+[dependencies.gst-play]
+package = "gstreamer-play"
+version = "0.23"
