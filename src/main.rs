@@ -12,7 +12,8 @@ fn main() -> glib::ExitCode {
         .build();
 
     application.connect_activate(|app| {
-        let window = AppWindow::new(app);
+        let mut window = AppWindow::new(app);
+        window.init();
         window.present();
     });
 
