@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gresources>
+    <gresource prefix="/hu/peterhorvath/showtime">
+        <file
+            compressed="true"
+            preprocess="xml-stripblanks"
+        >app_window.ui</file>
+    </gresource>
+</gresources>

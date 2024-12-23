@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+    <template class="ShowtimeAppWindow" parent="GtkApplicationWindow">
+        <property name="title">Showtime</property>
+        <child>
+            <object class="GtkBox" id="main_box">
+                <property name="orientation">vertical</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <child>
+                    <object class="GtkProgressBar" id="progress_bar" />
+                </child>
+                <child>
+                    <object class="GtkButton" id="button">
+                        <property name="label">Play</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </template>
+</interface>
