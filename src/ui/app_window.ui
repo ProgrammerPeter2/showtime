@@ -12,6 +12,12 @@
                 <property name="valign">center</property>
                 <property name="halign">center</property>
                 <child>
+                    <object class="GtkBox" id="video_box">
+                        <property name="hexpand">TRUE</property>
+                        <property name="vexpand">TRUE</property>
+                    </object>
+                </child>
+                <child>
                     <object class="GtkProgressBar" id="progress_bar" />
                 </child>
                 <child>

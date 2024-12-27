@@ -1,63 +1,62 @@
 use async_channel::Sender;
 use glib::clone;
-use gst::prelude::*;
-use gtk4::glib;
+use gst::{prelude::ObjectExt, Element};
+use gst_play::{Play, PlaySignalAdapter};
+use gtk::glib;
 
 #[derive(Debug, Clone)]
 pub struct GstBackend {
     sender: Sender<u64>,
-    gst_player: gst_play::Play,
-    gst_signals: gst_play::PlaySignalAdapter,
+    play: Play,
+    signals: PlaySignalAdapter,
+    gtksink: Element,
 }
 
 impl GstBackend {
     pub fn new(sender: Sender<u64>) -> Self {
-        let gst_player = gst_play::Play::default();
-        gst_player.set_video_track_enabled(false);
+        let play = Play::default();
+        let gtksink = gst::ElementFactory::make("gtk4paintablesink")
+            .build()
+            .unwrap();
 
-        let signals = gst_play::PlaySignalAdapter::new(&gst_player);
-        let res = Self {
+        play.pipeline().set_property("video-sink", &gtksink);
+
+        let signals = PlaySignalAdapter::new(&play);
+        let instance = Self {
             sender,
-            gst_player,
-            gst_signals: signals,
+            play,
+            signals,
+            gtksink,
         };
-        res.setup_signals();
-
-        res
+        instance.setup_signals();
+        instance
     }
 
     fn setup_signals(&self) {
-        self.gst_signals.connect_position_updated(clone!(
+        self.signals.connect_position_updated(clone!(
             #[strong(rename_to = sender)]
             self.sender,
-            move |_, clock| {
-                if let Some(clock) = clock {
-                    let position = clock.seconds() as u64;
-                    if let Err(e) = sender.send_blocking(position) {
-                        eprintln!("Failed to send position: {}", e);
-                    }
-                }
+            move |_, pos| {
+                sender.send_blocking(pos.unwrap().seconds()).unwrap();
             }
         ));
     }
-
     pub fn set_song_uri(&self, uri: Option<&str>) {
-        // FIXME: https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/1124
         if uri.is_some() {
-            self.gst_player.set_uri(uri);
+            self.play.set_uri(uri);
         }
     }
 
     pub fn play(&self) {
-        self.gst_player.play();
+        self.play.play();
     }
 
     pub fn pause(&self) {
-        self.gst_player.pause();
+        self.play.pause();
     }
 
-    pub fn stop(&self) {
-        self.gst_player.stop();
+    pub fn sink(&self) -> &Element {
+        &self.gtksink
     }
 
     pub fn toggle(&self, state: bool) {

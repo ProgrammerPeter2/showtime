@@ -3,18 +3,16 @@ name = "showtime"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+build-scripts = []
+
 [dependencies]
 async-channel = "2.3.1"
-gtk4 = { version = "0.9.5", features = ["v4_16", "gnome_47"] }
+gtk = { package = "gtk4", version = "0.9.5", features = ["v4_16", "gnome_47"] }
+gst = { package = "gstreamer", version = "0.23" }
+gst-audio = { package = "gstreamer-audio", version = "0.23" }
+gst-play = { package = "gstreamer-play", version = "0.23" }
+gst-plugin-gtk4 = { version = "0.13", features = ["gtk_v4_16"] }
 
-[dependencies.gst]
-package = "gstreamer"
-version = "0.23"
-
-[dependencies.gst-audio]
-package = "gstreamer-audio"
-version = "0.23"
-
-[dependencies.gst-play]
-package = "gstreamer-play"
-version = "0.23"
+[build-dependencies]
+glib-build-tools = "0.20.0"
