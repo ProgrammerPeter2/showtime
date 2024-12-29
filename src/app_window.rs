@@ -1,3 +1,4 @@
+use gst::subclass::prelude::ObjectSubclassIsExt;
 use gtk::glib;
 
 use crate::gst_backend::GstBackend;
@@ -11,6 +12,7 @@ use std::env;
 mod imp {
     use super::*;
 
+    use gst::message::Element;
     use gstgtk4::RenderWidget;
     use gtk::subclass::prelude::*;
     use gtk::{glib, Box, CompositeTemplate};
@@ -111,6 +113,10 @@ mod imp {
             }
             self.player.toggle(self.state.get());
         }
+
+        pub fn sink(&self) -> &gst::Element {
+            self.player.sink()
+        }
     }
 
     // Trait shared by all widgets
@@ -134,5 +140,9 @@ impl ShowtimeAppWindow {
     pub fn new(app: &Application) -> Self {
         // Create new window
         Object::builder().property("application", app).build()
+    }
+
+    pub fn sink(&self) -> &gst::Element {
+        self.imp().sink()
     }
 }
