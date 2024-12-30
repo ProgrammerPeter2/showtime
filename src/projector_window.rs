@@ -12,7 +12,7 @@ mod imp {
     use std::cell::RefCell;
 
     #[derive(CompositeTemplate)]
-    #[template(resource = "/hu/peterhorvath/showtime/projector_window.ui")]
+    #[template(resource = "/hu/peterhorvath/showtime/ui/projector_window.ui")]
     pub struct ShowtimeProjectorWindow {
         #[template_child]
         video_holder: TemplateChild<Box>,

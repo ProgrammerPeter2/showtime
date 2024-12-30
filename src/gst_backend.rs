@@ -66,10 +66,8 @@ impl GstBackend {
 
     pub fn toggle(&self, state: bool) {
         if state {
-            eprintln!("Playing.");
             self.play();
         } else {
-            eprintln!("Paused");
             self.pause();
         }
     }

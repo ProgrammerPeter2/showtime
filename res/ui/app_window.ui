@@ -26,6 +26,12 @@
                                 <property name="width-request">40</property>
                             </object>
                         </child>
+                        <child type="start">
+                            <object class="GtkButton" id="button">
+                                <property name="name">play-button</property>
+                                <property name="icon-name">play</property>
+                            </object>
+                        </child>
                         <child>
                             <object class="GtkScale" id="position_scale">
                                 <property name="width-request">560</property>
@@ -34,13 +40,9 @@
                         <child type="end">
                             <object class="GtkLabel" id="remaining_time">
                                 <property name="label">--:--</property>
+                                <property name="width-request">40</property>
                             </object>
                         </child>
-                    </object>
-                </child>
-                <child>
-                    <object class="GtkButton" id="button">
-                        <property name="label">Play</property>
                     </object>
                 </child>
             </object>

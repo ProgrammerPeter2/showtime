@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gresources>
+    <gresource prefix="/hu/peterhorvath/showtime/ui">
+        <file
+            compressed="true"
+            preprocess="xml-stripblanks"
+        >app_window.ui</file>
+        <file
+            compressed="true"
+            preprocess="xml-stripblanks"
+        >projector_window.ui</file>
+    </gresource>
+    <gresource prefix="/hu/peterhorvath/showtime/icons">
+        <file preprocess="xml-stripblanks">play-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">play-dark-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">pause-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">pause-dark-symbolic.svg</file>
+    </gresource>
+</gresources>

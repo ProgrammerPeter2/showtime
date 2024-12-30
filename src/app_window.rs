@@ -2,7 +2,7 @@ use gst::subclass::prelude::ObjectSubclassIsExt;
 use gtk::glib;
 
 use crate::gst_backend::GstBackend;
-use adw::Application;
+use adw::{Application, StyleManager};
 use glib::{clone, Object, Propagation};
 use gtk::prelude::*;
 use gtk::{gio, Button};
@@ -30,12 +30,14 @@ fn format_seconds(time: &u64) -> String {
 mod imp {
     use super::*;
 
+    use adw::ffi::AdwStyleManager;
     use gstgtk4::RenderWidget;
+    use gtk::gdk::Display;
     use gtk::subclass::prelude::*;
     use gtk::{glib, Adjustment, Box, CompositeTemplate, Label, Scale};
 
     #[derive(CompositeTemplate)]
-    #[template(resource = "/hu/peterhorvath/showtime/app_window.ui")]
+    #[template(resource = "/hu/peterhorvath/showtime/ui/app_window.ui")]
     pub struct ShowtimeAppWindow {
         #[template_child]
         button: TemplateChild<Button>,
@@ -132,6 +134,14 @@ mod imp {
                 }
             ));
 
+            StyleManager::default().connect_dark_notify(clone!(
+                #[weak(rename_to=this)]
+                self,
+                move |_| {
+                    this.set_button_icon();
+                }
+            ));
+
             self.button.connect_clicked(clone!(
                 #[weak(rename_to = this)]
                 self,
@@ -148,12 +158,20 @@ mod imp {
     impl ShowtimeAppWindow {
         fn button_clicked(&self, button: &Button) {
             self.state.set(!self.state.get());
-            if self.state.get() {
-                button.set_label("Pause");
-            } else {
-                button.set_label("Play");
-            }
+            self.set_button_icon();
             self.player.toggle(self.state.get());
+        }
+
+        fn set_button_icon(&self) {
+            let icon_name = if self.state.get() { "pause" } else { "play" };
+
+            if !StyleManager::default().is_dark() {
+                println!("dark");
+                self.button
+                    .set_icon_name((icon_name.to_owned() + "-dark").as_str());
+            } else {
+                self.button.set_icon_name(icon_name);
+            }
         }
 
         pub fn sink(&self) -> &gst::Element {
