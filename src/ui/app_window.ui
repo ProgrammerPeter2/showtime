@@ -18,7 +18,25 @@
                     </object>
                 </child>
                 <child>
-                    <object class="GtkScale" id="position_scale" />
+                    <object class="GtkBox">
+                        <property name="orientation">horizontal</property>
+                        <child type="start">
+                            <object class="GtkLabel" id="elapsed_time">
+                                <property name="label">00:00</property>
+                                <property name="width-request">40</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkScale" id="position_scale">
+                                <property name="width-request">560</property>
+                            </object>
+                        </child>
+                        <child type="end">
+                            <object class="GtkLabel" id="remaining_time">
+                                <property name="label">--:--</property>
+                            </object>
+                        </child>
+                    </object>
                 </child>
                 <child>
                     <object class="GtkButton" id="button">

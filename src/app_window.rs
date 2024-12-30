@@ -9,18 +9,40 @@ use gtk::{gio, Button};
 use std::cell::Cell;
 use std::env;
 
+fn format_time_fragment(num: u64) -> String {
+    if num < 10 {
+        format!("0{num}")
+    } else {
+        format!("{num}")
+    }
+}
+
+fn format_seconds(time: &u64) -> String {
+    let minutes: u64 = time / 60;
+    let seconds: u64 = time - (minutes * 60);
+    format!(
+        "{}:{}",
+        format_time_fragment(minutes),
+        format_time_fragment(seconds)
+    )
+}
+
 mod imp {
     use super::*;
 
     use gstgtk4::RenderWidget;
     use gtk::subclass::prelude::*;
-    use gtk::{glib, Adjustment, Box, CompositeTemplate, Scale};
+    use gtk::{glib, Adjustment, Box, CompositeTemplate, Label, Scale};
 
     #[derive(CompositeTemplate)]
     #[template(resource = "/hu/peterhorvath/showtime/app_window.ui")]
     pub struct ShowtimeAppWindow {
         #[template_child]
         button: TemplateChild<Button>,
+        #[template_child]
+        elapsed_time: TemplateChild<Label>,
+        #[template_child]
+        remaining_time: TemplateChild<Label>,
         #[template_child]
         position_scale: TemplateChild<Scale>,
         #[template_child]
@@ -50,6 +72,8 @@ mod imp {
             let player = GstBackend::new(sender);
             Self {
                 button: TemplateChild::default(),
+                elapsed_time: TemplateChild::default(),
+                remaining_time: TemplateChild::default(),
                 position_scale: TemplateChild::default(),
                 video_box: TemplateChild::default(),
                 video_widget: RenderWidget::new(&player.sink()),
@@ -77,7 +101,8 @@ mod imp {
                 Err(err) => eprintln!("{:?}", err),
             }
 
-            let adjustment = Adjustment::new(0.0, 0.0, 157.0, 1.0, 0.0, 0.0);
+            static DURATION: u64 = 157;
+            let adjustment = Adjustment::new(0.0, 0.0, DURATION as f64, 1.0, 0.0, 0.0);
             self.position_scale.set_adjustment(&adjustment);
 
             self.position_scale.connect_change_value(clone!(
@@ -92,10 +117,16 @@ mod imp {
             glib::spawn_future_local(clone!(
                 #[weak(rename_to = position_scale)]
                 self.position_scale,
+                #[weak(rename_to = elapsed_time)]
+                self.elapsed_time,
+                #[weak(rename_to = remaining_time)]
+                self.remaining_time,
                 #[strong(rename_to = receiver)]
                 self.receiver,
                 async move {
                     while let Ok(position) = receiver.recv().await {
+                        elapsed_time.set_label(format_seconds(&position).as_str());
+                        remaining_time.set_label(format_seconds(&(DURATION - position)).as_str());
                         position_scale.set_value(position as f64);
                     }
                 }
