@@ -5,5 +5,9 @@
             compressed="true"
             preprocess="xml-stripblanks"
         >app_window.ui</file>
+        <file
+            compressed="true"
+            preprocess="xml-stripblanks"
+        >projector_window.ui</file>
     </gresource>
 </gresources>

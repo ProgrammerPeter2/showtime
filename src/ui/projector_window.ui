@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<interface>
+    <template class="ShowtimeProjectorWindow" parent="AdwWindow">
+        <property name="title">Showtime presenter</property>
+        <property name="content">
+            <object class="GtkBox" id="video_holder" />
+        </property>
+    </template>
+</interface>

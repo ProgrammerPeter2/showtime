@@ -1,10 +1,14 @@
 mod app_window;
 mod gst_backend;
+mod projector_window;
 
+use adw::Application;
 use app_window::ShowtimeAppWindow;
 use gst;
+use gst::glib::Propagation;
 use gtk::prelude::*;
-use gtk::{gio, glib, Application};
+use gtk::{gio, glib};
+use projector_window::ShowtimeProjectorWindow;
 
 fn main() -> glib::ExitCode {
     gst::init().expect("Failed to init GStreamer!");
@@ -17,19 +21,16 @@ fn main() -> glib::ExitCode {
         .build();
 
     application.connect_activate(|app| {
-        use gstgtk4::RenderWidget;
-        use gtk::Window;
-
         let app_window = ShowtimeAppWindow::new(&app);
 
-        let projector_window = Window::builder()
-            .application(app)
-            .title("Showtime presenter")
-            .build();
-        let render_widget = RenderWidget::new(app_window.sink());
-        render_widget.set_size_request(1250, 720);
-        projector_window.set_child(Some(&render_widget));
+        let projector_window = ShowtimeProjectorWindow::new(app);
+        projector_window.setup_player(app_window.sink());
         projector_window.present();
+
+        app_window.connect_close_request(move |_| {
+            projector_window.close();
+            Propagation::Proceed
+        });
         app_window.present();
     });
 

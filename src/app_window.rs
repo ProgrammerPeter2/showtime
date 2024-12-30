@@ -2,17 +2,17 @@ use gst::subclass::prelude::ObjectSubclassIsExt;
 use gtk::glib;
 
 use crate::gst_backend::GstBackend;
+use adw::Application;
 use glib::clone;
 use glib::Object;
 use gtk::prelude::*;
-use gtk::{gio, Application, Button, ProgressBar};
+use gtk::{gio, Button, ProgressBar};
 use std::cell::Cell;
 use std::env;
 
 mod imp {
     use super::*;
 
-    use gst::message::Element;
     use gstgtk4::RenderWidget;
     use gtk::subclass::prelude::*;
     use gtk::{glib, Box, CompositeTemplate};
