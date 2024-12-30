@@ -8,7 +8,7 @@ mod imp {
     use gstgtk4::RenderWidget;
     use gtk::prelude::BoxExt;
     use gtk::subclass::prelude::*;
-    use gtk::{glib, Box, CompositeTemplate, Orientation, TemplateChild};
+    use gtk::{glib, Box, CompositeTemplate, TemplateChild};
     use std::cell::RefCell;
 
     #[derive(CompositeTemplate)]

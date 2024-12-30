@@ -55,6 +55,11 @@ impl GstBackend {
         self.play.pause();
     }
 
+    pub fn seek(&self, pos: u64) {
+        self.play.seek(gst::ClockTime::from_seconds(pos.clone()));
+        self.sender.send_blocking(pos).unwrap();
+    }
+
     pub fn sink(&self) -> &Element {
         &self.gtksink
     }

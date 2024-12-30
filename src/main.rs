@@ -4,8 +4,8 @@ mod projector_window;
 
 use adw::Application;
 use app_window::ShowtimeAppWindow;
+use glib::Propagation;
 use gst;
-use gst::glib::Propagation;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use projector_window::ShowtimeProjectorWindow;

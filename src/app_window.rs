@@ -3,10 +3,9 @@ use gtk::glib;
 
 use crate::gst_backend::GstBackend;
 use adw::Application;
-use glib::clone;
-use glib::Object;
+use glib::{clone, Object, Propagation};
 use gtk::prelude::*;
-use gtk::{gio, Button, ProgressBar};
+use gtk::{gio, Button};
 use std::cell::Cell;
 use std::env;
 
@@ -15,7 +14,7 @@ mod imp {
 
     use gstgtk4::RenderWidget;
     use gtk::subclass::prelude::*;
-    use gtk::{glib, Box, CompositeTemplate};
+    use gtk::{glib, Adjustment, Box, CompositeTemplate, Scale};
 
     #[derive(CompositeTemplate)]
     #[template(resource = "/hu/peterhorvath/showtime/app_window.ui")]
@@ -23,7 +22,7 @@ mod imp {
         #[template_child]
         button: TemplateChild<Button>,
         #[template_child]
-        progress_bar: TemplateChild<ProgressBar>,
+        position_scale: TemplateChild<Scale>,
         #[template_child]
         video_box: TemplateChild<Box>,
         video_widget: RenderWidget,
@@ -51,7 +50,7 @@ mod imp {
             let player = GstBackend::new(sender);
             Self {
                 button: TemplateChild::default(),
-                progress_bar: TemplateChild::default(),
+                position_scale: TemplateChild::default(),
                 video_box: TemplateChild::default(),
                 video_widget: RenderWidget::new(&player.sink()),
                 state: Cell::new(false),
@@ -78,14 +77,26 @@ mod imp {
                 Err(err) => eprintln!("{:?}", err),
             }
 
+            let adjustment = Adjustment::new(0.0, 0.0, 157.0, 1.0, 0.0, 0.0);
+            self.position_scale.set_adjustment(&adjustment);
+
+            self.position_scale.connect_change_value(clone!(
+                #[strong(rename_to = player)]
+                self.player,
+                move |_, __, pos| {
+                    player.seek(pos as u64);
+                    Propagation::Proceed
+                }
+            ));
+
             glib::spawn_future_local(clone!(
-                #[weak(rename_to = progress_bar)]
-                self.progress_bar,
+                #[weak(rename_to = position_scale)]
+                self.position_scale,
                 #[strong(rename_to = receiver)]
                 self.receiver,
                 async move {
                     while let Ok(position) = receiver.recv().await {
-                        progress_bar.set_fraction(position as f64 / 157.0);
+                        position_scale.set_value(position as f64);
                     }
                 }
             ));

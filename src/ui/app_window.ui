@@ -18,7 +18,7 @@
                     </object>
                 </child>
                 <child>
-                    <object class="GtkProgressBar" id="progress_bar" />
+                    <object class="GtkScale" id="position_scale" />
                 </child>
                 <child>
                     <object class="GtkButton" id="button">
