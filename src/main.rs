@@ -17,7 +17,7 @@ fn main() -> glib::ExitCode {
     gio::resources_register_include!("showtime.gresource").expect("Failed to include resources!");
 
     let application = Application::builder()
-        .application_id("hu.peterhorvath.showtime")
+        .application_id("hu.doty.showtime")
         .build();
 
     application.connect_activate(|app| {
