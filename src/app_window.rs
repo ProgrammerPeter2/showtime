@@ -33,7 +33,7 @@ mod imp {
     use glib::subclass::Signal;
     use gstgtk4::RenderWidget;
     use gtk::subclass::prelude::*;
-    use gtk::{glib, Adjustment, Box, CompositeTemplate, Label, Scale};
+    use gtk::{glib, Adjustment, Box, CompositeTemplate, Label, Overlay, Scale};
     use std::sync::OnceLock;
 
     #[derive(CompositeTemplate)]
@@ -51,8 +51,12 @@ mod imp {
         #[template_child]
         blackout_button: TemplateChild<Button>,
         #[template_child]
-        video_box: TemplateChild<Box>,
+        video_box: TemplateChild<Overlay>,
         video_widget: RenderWidget,
+        #[template_child]
+        blackout_overlay: TemplateChild<Box>,
+        #[template_child]
+        blackout_label: TemplateChild<Label>,
         state: Cell<bool>,
         receiver: async_channel::Receiver<u64>,
         player: GstBackend,
@@ -84,6 +88,8 @@ mod imp {
                 blackout_button: TemplateChild::default(),
                 video_box: TemplateChild::default(),
                 video_widget: RenderWidget::new(&player.sink()),
+                blackout_overlay: TemplateChild::default(),
+                blackout_label: TemplateChild::default(),
                 state: Cell::new(false),
                 receiver,
                 player,
@@ -156,13 +162,17 @@ mod imp {
             ));
 
             self.video_widget.set_size_request(640, 480);
-            self.video_box.append(&self.video_widget);
+            self.video_box.set_child(Some(&self.video_widget));
 
             self.blackout_button.connect_clicked(clone!(
                 #[weak(rename_to = this)]
-                self.obj(),
+                self,
                 move |_| {
-                    this.emit_by_name::<()>("blackout", &[]);
+                    let blackout = !this.blackout.get();
+                    this.blackout_overlay.set_visible(blackout);
+                    this.blackout_label.set_visible(blackout);
+                    this.blackout.set(blackout);
+                    this.obj().emit_by_name::<()>("blackout", &[]);
                 }
             ));
         }

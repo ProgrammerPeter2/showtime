@@ -12,9 +12,30 @@
                 <property name="valign">center</property>
                 <property name="halign">center</property>
                 <child>
-                    <object class="GtkBox" id="video_box">
+                    <object class="GtkOverlay" id="video_box">
                         <property name="hexpand">TRUE</property>
                         <property name="vexpand">TRUE</property>
+                        <child type="overlay">
+                            <object class="GtkBox" id="blackout_overlay">
+                                <property name="hexpand">TRUE</property>
+                                <property name="vexpand">TRUE</property>
+                                <property name="visible">FALSE</property>
+                                <property name="name">bl-overlay</property>
+                                <child>
+                                </child>
+                            </object>
+                        </child>
+                        <child type="overlay">
+                            <object class="GtkLabel" id="blackout_label">
+                                <property name="label">Blackout</property>
+                                <property name="hexpand">TRUE</property>
+                                <property
+                                    name="valign"
+                                >GTK_ALIGN_CENTER</property>
+                                <property name="name">bl-label</property>
+                                <property name="visible">FALSE</property>
+                            </object>
+                        </child>
                     </object>
                 </child>
                 <child>

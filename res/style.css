@@ -1,0 +1,12 @@
+box#bl-overlay {
+    background-color: var(--accent-red);
+    opacity: 0.25;
+}
+
+label#bl-label {
+    background-color: var(--accent-red);
+    background-image: url("resource:///org/gnome/Adwaita/styles/assets/devel-symbolic.svg");
+    font-size: 78px;
+    font-weight: bold;
+    opacity: 1;
+}

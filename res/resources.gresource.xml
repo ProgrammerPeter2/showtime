@@ -16,4 +16,7 @@
         <file preprocess="xml-stripblanks">pause-symbolic.svg</file>
         <file preprocess="xml-stripblanks">pause-dark-symbolic.svg</file>
     </gresource>
+    <gresource prefix="/hu/doty/showtime">
+        <file>style.css</file>
+    </gresource>
 </gresources>
