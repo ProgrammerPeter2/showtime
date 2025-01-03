@@ -29,16 +29,17 @@ fn format_seconds(time: &u64) -> String {
 
 mod imp {
     use super::*;
-
-    use adw::ffi::AdwStyleManager;
+    use glib::prelude::ObjectExt;
+    use glib::subclass::Signal;
     use gstgtk4::RenderWidget;
-    use gtk::gdk::Display;
     use gtk::subclass::prelude::*;
     use gtk::{glib, Adjustment, Box, CompositeTemplate, Label, Scale};
+    use std::sync::OnceLock;
 
     #[derive(CompositeTemplate)]
-    #[template(resource = "/hu/peterhorvath/showtime/ui/app_window.ui")]
+    #[template(resource = "/hu/doty/showtime/ui/app_window.ui")]
     pub struct ShowtimeAppWindow {
+        blackout: Cell<bool>,
         #[template_child]
         button: TemplateChild<Button>,
         #[template_child]
@@ -47,6 +48,8 @@ mod imp {
         remaining_time: TemplateChild<Label>,
         #[template_child]
         position_scale: TemplateChild<Scale>,
+        #[template_child]
+        blackout_button: TemplateChild<Button>,
         #[template_child]
         video_box: TemplateChild<Box>,
         video_widget: RenderWidget,
@@ -73,10 +76,12 @@ mod imp {
             let (sender, receiver) = async_channel::bounded::<u64>(1);
             let player = GstBackend::new(sender);
             Self {
+                blackout: Cell::new(false),
                 button: TemplateChild::default(),
                 elapsed_time: TemplateChild::default(),
                 remaining_time: TemplateChild::default(),
                 position_scale: TemplateChild::default(),
+                blackout_button: TemplateChild::default(),
                 video_box: TemplateChild::default(),
                 video_widget: RenderWidget::new(&player.sink()),
                 state: Cell::new(false),
@@ -152,6 +157,19 @@ mod imp {
 
             self.video_widget.set_size_request(640, 480);
             self.video_box.append(&self.video_widget);
+
+            self.blackout_button.connect_clicked(clone!(
+                #[weak(rename_to = this)]
+                self.obj(),
+                move |_| {
+                    this.emit_by_name::<()>("blackout", &[]);
+                }
+            ));
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+            SIGNALS.get_or_init(|| vec![Signal::builder("blackout").build()])
         }
     }
 

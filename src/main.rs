@@ -4,7 +4,7 @@ mod projector_window;
 
 use adw::Application;
 use app_window::ShowtimeAppWindow;
-use glib::Propagation;
+use glib::{closure_local, Propagation};
 use gst;
 use gtk::prelude::*;
 use gtk::{gio, glib};
@@ -27,10 +27,23 @@ fn main() -> glib::ExitCode {
         projector_window.setup_player(app_window.sink());
         projector_window.present();
 
+        app_window.connect_closure(
+            "blackout",
+            false,
+            closure_local!(
+                #[weak]
+                projector_window,
+                move |_win: ShowtimeAppWindow| {
+                    projector_window.toggle_blackout();
+                }
+            ),
+        );
+
         app_window.connect_close_request(move |_| {
             projector_window.close();
             Propagation::Proceed
         });
+
         app_window.present();
     });
 

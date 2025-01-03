@@ -43,6 +43,11 @@
                                 <property name="width-request">40</property>
                             </object>
                         </child>
+                        <child type="end">
+                            <object class="GtkButton" id="blackout_button">
+                                <property name="label">Bl</property>
+                            </object>
+                        </child>
                     </object>
                 </child>
             </object>

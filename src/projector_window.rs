@@ -4,16 +4,18 @@ use gtk::{gio, glib};
 
 mod imp {
     use adw::subclass::window::AdwWindowImpl;
-    use gst::subclass::prelude::ObjectImplExt;
+    use glib::prelude::ObjectExt;
     use gstgtk4::RenderWidget;
-    use gtk::prelude::BoxExt;
+    use gtk::prelude::{BoxExt, WidgetExt};
+    use gtk::subclass::prelude::ObjectImplExt;
     use gtk::subclass::prelude::*;
     use gtk::{glib, Box, CompositeTemplate, TemplateChild};
-    use std::cell::RefCell;
+    use std::cell::{Cell, RefCell};
 
     #[derive(CompositeTemplate)]
-    #[template(resource = "/hu/peterhorvath/showtime/ui/projector_window.ui")]
+    #[template(resource = "/hu/doty/showtime/ui/projector_window.ui")]
     pub struct ShowtimeProjectorWindow {
+        blackout: Cell<bool>,
         #[template_child]
         video_holder: TemplateChild<Box>,
         video_widget: RefCell<Option<RenderWidget>>,
@@ -35,6 +37,7 @@ mod imp {
 
         fn new() -> Self {
             Self {
+                blackout: Cell::new(true),
                 video_holder: TemplateChild::default(),
                 video_widget: RefCell::new(None),
             }
@@ -55,6 +58,11 @@ mod imp {
             video_widget.set_size_request(1250, 720);
             self.video_holder.append(&video_widget);
             self.video_widget.replace(Some(video_widget));
+        }
+
+        pub fn toggle_blackout(&self) {
+            self.blackout.set(!self.blackout.get());
+            self.video_holder.set_visible(self.blackout.get());
         }
     }
 
@@ -79,5 +87,9 @@ impl ShowtimeProjectorWindow {
 
     pub fn setup_player(&self, sink: &gst::Element) {
         self.imp().setup_player(sink);
+    }
+
+    pub fn toggle_blackout(&self) {
+        self.imp().toggle_blackout();
     }
 }
